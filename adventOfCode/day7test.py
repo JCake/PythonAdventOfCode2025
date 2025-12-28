@@ -48,8 +48,15 @@ class MyTestCase(unittest.TestCase):
     def test_sample(self):
         self.assertEqual(21, splitter(sample))
 
+    def test_timelines_sample(self):
+        self.assertEqual(40, timelines(sample))
+
     def test_real(self):
-        self.assertEqual(1667, splitter(real_str))
+        full_result = full_split(real_str)
+        self.assertEqual(1667, full_result[0])
+        self.assertEqual(-1, full_result[1])
+
+
 
 
 if __name__ == '__main__':
