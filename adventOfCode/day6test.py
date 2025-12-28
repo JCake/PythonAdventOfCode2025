@@ -18,5 +18,11 @@ class MyTestCase(unittest.TestCase):
     def test_real(self):
         self.assertEqual(4580995422905, math(real_str))
 
+    def test_sample_ceph(self):
+        self.assertEqual(3263827, ceph_math(sample))
+
+    def test_real_ceph(self):
+        self.assertEqual(10875057285868, ceph_math(real_str))
+
 if __name__ == '__main__':
     unittest.main()
