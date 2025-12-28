@@ -1,26 +1,29 @@
-def splitter(input_str: str) -> int:
-    return full_split(input_str)[0]
+class Splits:
+    def __init__(self, splits, timelines):
+        self.splits = splits
+        self.timelines = timelines
 
-def timelines(input_str: str) -> int:
-    return full_split(input_str)[1]
-
-def full_split(input_str: str) -> list[int]:
+def splitter(input_str: str) -> Splits:
     lines = input_str.splitlines()
+    x_indices = set()
+    x_indices.add(lines[0].find('S'))
     split_spots = set()
-    paths = set()
-    paths.add(f'{lines[0].find('S')}')
+    timeline_counts = {lines[0].find('S'): 1}
     for y in range(1, len(lines)):
-        new_paths = set()
-        for path in paths:
-            x = int(path.split(',')[-1])
+        new_x_indices = set()
+        for x in x_indices:
             if lines[y][x] == '.':
-                new_paths.add(f'{path},{x}')
+                new_x_indices.add(x)
             elif lines[y][x] == '^':
-                new_paths.add(f'{path},{x-1}')
-                new_paths.add(f'{path},{x+1}')
+                new_x_indices.add(x-1)
+                new_x_indices.add(x+1)
                 split_spots.add(f'{x},{y}')
-        paths = new_paths
-    return [len(split_spots), len(paths)]
-
-
-
+                coming_in = int(timeline_counts[x])
+                timeline_counts[x] = 0
+                timeline_counts[x-1] = timeline_counts.get(x-1, 0) + coming_in
+                timeline_counts[x+1] = timeline_counts.get(x+1, 0) + coming_in
+        x_indices = new_x_indices
+    total_timelines = 0
+    for t in timeline_counts.values():
+        total_timelines += t
+    return Splits(len(split_spots), total_timelines)
