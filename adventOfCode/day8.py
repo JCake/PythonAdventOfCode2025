@@ -63,3 +63,15 @@ def circuit(input_str: str, pairs: int) -> int:
 
     chains.sort(key=lambda c: len(c))
     return len(chains[-1]) * len(chains[-2]) * len(chains[-3])
+
+def max_circuit(input_str: str) -> int:
+    coord_connections = build_coord_connections(input_str)
+    coord_count = len(input_str.splitlines())
+    chained_coords = set()
+    connection_index = 0
+    while len(chained_coords) < coord_count:
+        chained_coords.add(coord_connections[connection_index].coord1)
+        chained_coords.add(coord_connections[connection_index].coord2)
+        connection_index += 1
+    last_connection = coord_connections[connection_index - 1]
+    return last_connection.coord1.x * last_connection.coord2.x

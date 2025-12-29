@@ -34,6 +34,12 @@ class MyTestCase(unittest.TestCase):
     def test_real(self):
         self.assertEqual(181584, circuit(real_str, 1000))
 
+    def test_max_sample(self):
+        self.assertEqual(25272, max_circuit(sample))
+
+    def test_max_real(self):
+        self.assertEqual(8465902405, max_circuit(real_str))
+
 
 if __name__ == '__main__':
     unittest.main()
