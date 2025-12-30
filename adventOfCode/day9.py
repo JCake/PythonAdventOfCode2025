@@ -60,6 +60,7 @@ def limited_area(input_str: str) -> int:
                 area = new_area
     return area
 
+# TODO account for inlets
 def all_red_or_green(coord1, coord2, green_lines_y_to_xs, green_lines_x_to_ys):
     coord1_x_in = min(green_lines_y_to_xs[coord2.y]) <= coord1.x <= max(green_lines_y_to_xs[coord2.y])
     if coord1_x_in:
