@@ -40,13 +40,13 @@ def limited_area(input_str: str) -> int:
         red_coord2 = red_coords[next_i]
         if red_coord.x == red_coord2.x:
             min_and_max = MinAndMax(red_coord.y, red_coord2.y)
-            for y in range(min_and_max.min, min_and_max.max + 1):
+            for y in range(min_and_max.min - 1, min_and_max.max):
                 if y not in vertical_lines_y_indexed:
                     vertical_lines_y_indexed[y] = []
                 vertical_lines_y_indexed[y].append(red_coord.x)
         elif red_coord.y == red_coord2.y:
             min_and_max = MinAndMax(red_coord.x, red_coord2.x)
-            for x in range(min_and_max.min, min_and_max.max + 1):
+            for x in range(min_and_max.min - 1, min_and_max.max):
                 if x not in horizontal_lines_x_indexed:
                     horizontal_lines_x_indexed[x] = []
                 horizontal_lines_x_indexed[x].append(red_coord.y)
@@ -60,19 +60,38 @@ def limited_area(input_str: str) -> int:
 
 def all_red_or_green(coord1, coord2, horizontal_lines, vertical_lines):
     horizontal_line_xs = MinAndMax(coord1.x, coord2.x)
-    for x in vertical_lines[coord1.y]:
-        if horizontal_line_xs.contains(x):
-            return False
-    for x in vertical_lines[coord2.y]:
-        if horizontal_line_xs.contains(x):
-            return False
+    if coord1.y in vertical_lines:
+        for x in vertical_lines[coord1.y]:
+            if horizontal_line_xs.contains(x):
+                return False
+    if coord2.y in vertical_lines:
+        for x in vertical_lines[coord2.y]:
+            if horizontal_line_xs.contains(x):
+                return False
 
     vertical_line_ys = MinAndMax(coord1.y, coord2.y)
-    for y in horizontal_lines[coord1.x]:
-        if vertical_line_ys.contains(y):
-            return False
-    for y in horizontal_lines[coord2.x]:
-        if vertical_line_ys.contains(y):
-            return False
+    if coord1.x in horizontal_lines:
+        for y in horizontal_lines[coord1.x]:
+            if vertical_line_ys.contains(y):
+                return False
+    if coord2.x in horizontal_lines:
+        for y in horizontal_lines[coord2.x]:
+            if vertical_line_ys.contains(y):
+                return False
 
     return True
+
+def areas_in_range(input_str: str, min_area: int, max_area: int) -> list[int]:
+    lines = input_str.splitlines()
+    coords = []
+    for line in lines:
+        x_and_y = line.split(',')
+        coords.append(Coord(int(x_and_y[0]), int(x_and_y[1])))
+    areas = []
+    for i1 in range(len(coords)):
+        for i2 in range(i1 + 1, len(coords)):
+            new_area = abs(coords[i1].x - coords[i2].x + 1) * abs(coords[i1].y - coords[i2].y + 1)
+            if min_area < new_area < max_area:
+                areas.append(new_area)
+    areas.sort()
+    return areas

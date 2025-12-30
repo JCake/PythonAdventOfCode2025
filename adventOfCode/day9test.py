@@ -25,11 +25,16 @@ class MyTestCase(unittest.TestCase):
     def test_a_sample_limited(self):
         self.assertEqual(24, limited_area(sample))
 
-    # 4629351648 is too high
     # 1518085800 is too low
+    # 1979617678 is too high
     def test_real_limited(self):
         self.assertEqual(4748769124, limited_area(real_str))
 
+
+    def test_areas_in_range(self):
+        areas = areas_in_range(real_str, 1518085800, 1979617678)
+        print(areas)
+        self.assertEqual(5, len(areas))
 
 if __name__ == '__main__':
     unittest.main()
