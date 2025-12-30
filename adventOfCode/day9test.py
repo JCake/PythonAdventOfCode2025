@@ -26,6 +26,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(24, limited_area(sample))
 
     # 4629351648 is too high
+    # 1518085800 is too low
     def test_real_limited(self):
         self.assertEqual(4748769124, limited_area(real_str))
 
