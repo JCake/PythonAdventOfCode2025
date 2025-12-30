@@ -22,6 +22,12 @@ class MyTestCase(unittest.TestCase):
     def test_real(self):
         self.assertEqual(4748769124, max_area(real_str))
 
+    def test_a_sample_limited(self):
+        self.assertEqual(24, limited_area(sample))
+
+    def test_real_limited(self):
+        self.assertEqual(4748769124, limited_area(real_str))
+
 
 if __name__ == '__main__':
     unittest.main()

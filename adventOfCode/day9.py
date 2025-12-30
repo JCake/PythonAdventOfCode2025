@@ -16,3 +16,58 @@ def max_area(input_str: str) -> int:
             if new_area > area:
                 area = new_area
     return area
+
+def limited_area(input_str: str) -> int:
+    lines = input_str.splitlines()
+    red_coords = []
+    for line in lines:
+        x_and_y = line.split(',')
+        red_coords.append(Coord(int(x_and_y[0]), int(x_and_y[1])))
+    green_lines_y_to_xs = {}
+    for i, red_coord in enumerate(red_coords):
+        next_i = i + 1
+        if i == len(red_coords) - 1:
+            next_i = 0
+        red_coord2 = red_coords[next_i]
+        if red_coord.x == red_coord2.x:
+            start_y = min(red_coord.y, red_coord2.y)
+            end_y = max(red_coord.y, red_coord2.y) + 1
+            for y in range(start_y, end_y):
+                if y not in green_lines_y_to_xs:
+                    green_lines_y_to_xs[y] = []
+                green_lines_y_to_xs[y].append(red_coord.x)
+        elif red_coord.y == red_coord2.y:
+            if red_coord.y not in green_lines_y_to_xs:
+                green_lines_y_to_xs[red_coord.y] = []
+            start_x = min(red_coord.x, red_coord2.x)
+            end_x = max(red_coord.x, red_coord2.x) + 1
+            for x in range(start_x, end_x):
+                green_lines_y_to_xs[red_coord.y].append(x)
+    for y_line in green_lines_y_to_xs.keys():
+        min_x = min(green_lines_y_to_xs[y_line])
+        max_x = max(green_lines_y_to_xs[y_line])
+        xs = []
+        for x in range(min_x, max_x + 1):
+            xs.append(x)
+        green_lines_y_to_xs[y_line] = xs
+    area = 0
+    for i1 in range(len(red_coords)):
+        for i2 in range(i1 + 1, len(red_coords)):
+            new_area = abs(red_coords[i1].x - red_coords[i2].x + 1) * abs(red_coords[i1].y - red_coords[i2].y + 1)
+            if new_area > area and all_red_or_green(red_coords[i1], red_coords[i2], green_lines_y_to_xs):
+                area = new_area
+    return area
+
+def all_red_or_green(coord1, coord2, green_lines):
+    min_x = min(coord1.x, coord2.x)
+    max_x = max(coord1.x, coord2.x)
+    min_y = min(coord1.y, coord2.y)
+    max_y = max(coord1.y, coord2.y)
+    for y in range(min_y, max_y + 1):
+        if y not in green_lines:
+            return False
+        xs = green_lines[y]
+        for x in range(min_x, max_x + 1):
+            if x not in xs:
+                return False
+    return True
