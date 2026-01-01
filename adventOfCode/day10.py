@@ -67,34 +67,58 @@ def min_presses_for_line_joltage(line: str) -> int:
     joltage_strs = buttons_and_joltage[1].strip('}').split(',')
     for joltage_str in joltage_strs:
         joltage.append(int(joltage_str))
+    last_button_with_joltage = []
+    for j in range(0, len(joltage)):
+        i = len(buttons) - 1
+        while i >= 0:
+            if j in buttons[i]:
+                last_button_with_joltage.append(i)
+                break
+            i -= 1
+
 
     total_presses_to_try = 0
     success = False
     while not success:
         total_presses_to_try += 1
-        success = press_choice_joltage(buttons, 0, joltage.copy(), total_presses_to_try)
+        success = press_choice_joltage(buttons, 0, joltage.copy(), last_button_with_joltage, total_presses_to_try)
     return total_presses_to_try
 
 
 # TODO improve efficiency by looking more closely at possible values
-def press_choice_joltage(buttons: list[list[int]], current_index: int, joltage_status: list[int], presses_remaining) -> bool:
+def press_choice_joltage(buttons: list[list[int]], current_index: int, joltage_status: list[int], last_button_with_joltage: list[int], presses_remaining) -> bool:
     if presses_remaining == 0:
         return all_zero(joltage_status)
     if current_index >= len(buttons):
         return False
     current_button = buttons[current_index]
+    needed_presses = 0
     max_presses = presses_remaining
     for j in current_button:
         if joltage_status[j] < max_presses:
             max_presses = joltage_status[j]
+        if last_button_with_joltage[j] == current_index:
+            if joltage_status[j] > needed_presses > 0:
+                # Need more presses than we can give
+                return False
+            needed_presses = joltage_status[j]
+    if needed_presses > presses_remaining:
+        return False
+    # Exact number of presses needed
+    if not needed_presses == 0:
+        for j in current_button:
+            joltage_status[j] = joltage_status[j] - needed_presses
+        return press_choice_joltage(buttons, current_index + 1, joltage_status.copy(), last_button_with_joltage,
+                                presses_remaining - needed_presses)
+    # Look at range if not exact number needed
     # no presses:
-    if press_choice_joltage(buttons, current_index + 1, joltage_status.copy(), presses_remaining):
+    if press_choice_joltage(buttons, current_index + 1, joltage_status.copy(), last_button_with_joltage, presses_remaining):
         return True
     # at least one press:
     for i in range(1,max_presses+1):
         for j in current_button:
             joltage_status[j] = joltage_status[j] - 1
-        if press_choice_joltage(buttons, current_index+1, joltage_status.copy(), presses_remaining - i):
+        if press_choice_joltage(buttons, current_index+1, joltage_status.copy(), last_button_with_joltage, presses_remaining - i):
             return True
     return False
 
