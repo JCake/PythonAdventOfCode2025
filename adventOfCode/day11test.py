@@ -44,7 +44,7 @@ bbb: out'''
     def test_real(self):
         self.assertEqual(585, paths(real_str))
 
-    def test_part2_sample(self):
+    def test_part2_a_sample(self):
         self.assertEqual(2, restricted_paths('''svr: aaa bbb
 aaa: fft
 fft: ccc
