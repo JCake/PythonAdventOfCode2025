@@ -20,8 +20,6 @@ def min_presses_for_line(line: str) -> int:
             lights_list.append(int(light))
         buttons.append(lights_list)
 
-
-
     total_presses_to_try = 0
     success = False
     while not success:
@@ -47,4 +45,60 @@ def press_choice(buttons: list[list[int]], current_button_index: int, press: boo
     if skipped_presses < len(buttons):
         no_press_next = press_choice(buttons, (current_button_index + 1) % len(buttons), False, light_status.copy(), goal_light_status, presses_remaining, skipped_presses)
     return press_next or no_press_next
+
+def min_presses_joltage(input_str: str) -> int:
+    lines = input_str.splitlines()
+    total_presses = 0
+    for line in lines:
+        total_presses += min_presses_for_line_joltage(line)
+    return total_presses
+
+def min_presses_for_line_joltage(line: str) -> int:
+    buttons_and_joltage = line.split('] ')[1].split(' {')
+    button_strs = buttons_and_joltage[0].strip().split(' ')
+    buttons = []
+    for button_str in button_strs:
+        lights_for_button = button_str.replace('(','').replace(')','').split(',')
+        lights_list = []
+        for light in lights_for_button:
+            lights_list.append(int(light))
+        buttons.append(lights_list)
+    joltage = []
+    joltage_strs = buttons_and_joltage[1].strip('}').split(',')
+    for joltage_str in joltage_strs:
+        joltage.append(int(joltage_str))
+
+    total_presses_to_try = 0
+    success = False
+    while not success:
+        total_presses_to_try += 1
+        success = press_choice_joltage(buttons, 0, True, [0] * len(joltage), joltage, total_presses_to_try, 0)
+        if not success:
+            success = press_choice_joltage(buttons, 0, False, [0] * len(joltage), joltage, total_presses_to_try, 0)
+    return total_presses_to_try
+
+
+def press_choice_joltage(buttons: list[list[int]], current_index: int, press: bool, joltage_status: list[int], goal_joltage_status: list[int], presses_remaining, skipped_presses) -> bool:
+    if presses_remaining == 0:
+        return joltage_status == goal_joltage_status
+    if any_too_high(joltage_status, goal_joltage_status):
+        return False
+    if press:
+        for impacted_light in buttons[current_index]:
+            joltage_status[impacted_light] = joltage_status[impacted_light] + 1
+        presses_remaining -= 1
+        skipped_presses = 0
+    else:
+        skipped_presses += 1
+    press_next = press_choice(buttons, (current_index + 1) % len(buttons), True, joltage_status.copy(), goal_joltage_status, presses_remaining, skipped_presses)
+    no_press_next = False
+    if skipped_presses < len(buttons):
+        no_press_next = press_choice(buttons, (current_index + 1) % len(buttons), False, joltage_status.copy(), goal_joltage_status, presses_remaining, skipped_presses)
+    return press_next or no_press_next
+
+def any_too_high(joltage_status: list[int], goal_joltage_status: list[int]):
+    for i in range(len(joltage_status)):
+        if joltage_status[i] > goal_joltage_status[i]:
+            return True
+    return False
 

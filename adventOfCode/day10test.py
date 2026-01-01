@@ -21,5 +21,8 @@ class MyTestCase(unittest.TestCase):
     def test_real(self):
         self.assertEqual(401, min_presses(real_str))
 
+    def test_a_sample_joltage(self):
+        self.assertEqual(33, min_presses_joltage(sample))
+
 if __name__ == '__main__':
     unittest.main()
