@@ -28,11 +28,20 @@ def restricted_paths(input_str: str) -> int:
     for line in lines:
         in_and_out = line.split(': ')
         device_connections[in_and_out[0]] = in_and_out[1].split(' ')
-    svr_to_dac = paths_to('svr', device_connections, 'dac', ['fft','out'])
-    dac_to_fft = paths_to('dac', device_connections, 'fft', ['out'])
-    fft_to_out = paths_to('fft', device_connections, 'out')
+    svr_to_dac = 0
+    svr_to_fft = 0
+    for point in device_connections['svr']:
+        svr_to_dac += paths_to(point, device_connections, 'dac', ['svr','fft','out'])
+        svr_to_fft += paths_to(point, device_connections, 'fft', ['svr','dac','out'])
+    dac_to_fft = 0
+    dac_to_out = 0
+    for point in device_connections['dac']:
+        dac_to_fft += paths_to(point, device_connections, 'fft', ['out','dac','svr'])
+        dac_to_out += paths_to(point, device_connections, 'out', ['svr','dac','fft'])
+    fft_to_out = 0
+    fft_to_dac = 0
+    for point in device_connections['fft']:
+        fft_to_out += paths_to(point, device_connections, 'out', ['svr','fft','dac'])
+        fft_to_dac += paths_to(point, device_connections, 'dac', ['svr','fft','out'])
 
-    svr_to_fft = paths_to('svr', device_connections, 'fft', ['dac', 'out'])
-    fft_to_dac = paths_to('fft', device_connections, 'dac', ['out'])
-    dac_to_out = paths_to('dac', device_connections, 'out')
     return svr_to_dac * dac_to_fft * fft_to_out + svr_to_fft * fft_to_dac * dac_to_out
